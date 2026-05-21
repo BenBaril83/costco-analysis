@@ -178,12 +178,13 @@
         background: #e9ecef;
       }
 
+      /* Convention: price increase = inflation = red; decrease = green. */
       .price-change-item.positive {
-        border-left: 4px solid #10b981;
+        border-left: 4px solid #ef4444;
       }
 
       .price-change-item.negative {
-        border-left: 4px solid #ef4444;
+        border-left: 4px solid #10b981;
       }
 
       .price-change-name {
@@ -205,11 +206,11 @@
       }
 
       .price-change-percent.positive {
-        color: #10b981;
+        color: #ef4444;
       }
 
       .price-change-percent.negative {
-        color: #ef4444;
+        color: #10b981;
       }
 
       .price-change-prices {
@@ -285,6 +286,95 @@
         outline: none;
         border-color: #3b82f6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 4px;
+        background: white;
+        padding: 6px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e1e5e9;
+      }
+
+      .tab {
+        flex: 1;
+        background: transparent;
+        color: #6c757d;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: inherit;
+        transition: background-color 0.15s, color 0.15s;
+      }
+
+      .tab:hover {
+        background: #f3f4f6;
+        color: #1a1a1a;
+      }
+
+      .tab.active {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .tab-panel {
+        display: none;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .tab-panel.active {
+        display: flex;
+      }
+
+      .index-headline {
+        background: white;
+        padding: 20px 24px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e1e5e9;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .headline-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .headline-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      .headline-value {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.1;
+      }
+
+      .headline-value.positive {
+        color: #ef4444;
+      }
+
+      .headline-value.negative {
+        color: #10b981;
+      }
+
+      .headline-sub {
+        font-size: 12px;
+        color: #6c757d;
       }
 
       @media (max-width: 1024px) {
@@ -367,40 +457,115 @@
       </div>
 
       <div class="main-content">
-        <div class="chart-container">
-          <div id="priceChart" style="width: 100%; height: 100%"></div>
+        <div class="tabs">
+          <button class="tab active" data-tab="trends">Item Trends</button>
+          <button class="tab" data-tab="index">Price Index</button>
+          <button class="tab" data-tab="depts">Departments</button>
         </div>
 
-        <div class="table-container">
-          <h3 style="margin-bottom: 15px; color: #1a1a1a">Data Table</h3>
-          <table class="data-table" id="dataTable">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Item</th>
-                <th>Description</th>
-                <th>Warehouse</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-              <tr>
-                <td colspan="5" class="loading">Loading data...</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="tab-panel active" id="tab-trends">
+          <div class="chart-container">
+            <div id="priceChart" style="width: 100%; height: 100%"></div>
+          </div>
+
+          <div class="table-container">
+            <h3 style="margin-bottom: 15px; color: #1a1a1a">Data Table</h3>
+            <table class="data-table" id="dataTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th>Warehouse</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr>
+                  <td colspan="5" class="loading">Loading data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-index">
+          <div class="index-headline" id="indexHeadline">
+            <div class="loading" style="grid-column: 1 / -1">
+              Computing your personal Costco price index...
+            </div>
+          </div>
+          <div class="chart-container" style="height: 520px">
+            <div id="indexChart" style="width: 100%; height: 100%"></div>
+          </div>
+          <div class="table-container">
+            <h3 style="margin-bottom: 15px; color: #1a1a1a">
+              Biggest Movers (items in the index, by % change since baseline)
+            </h3>
+            <table class="data-table" id="indexMoversTable">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Baseline</th>
+                  <th>Latest</th>
+                  <th>Change</th>
+                  <th>Purchases</th>
+                </tr>
+              </thead>
+              <tbody id="indexMoversBody">
+                <tr>
+                  <td colspan="5" class="loading">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-depts">
+          <div class="chart-container" style="height: 520px">
+            <div id="deptsChart" style="width: 100%; height: 100%"></div>
+          </div>
+          <div class="table-container">
+            <h3 style="margin-bottom: 15px; color: #1a1a1a">
+              Spend by Department (lifetime)
+            </h3>
+            <table class="data-table" id="deptsTable">
+              <thead>
+                <tr>
+                  <th>Department</th>
+                  <th>Top items</th>
+                  <th>Lifetime spend</th>
+                  <th>Line items</th>
+                </tr>
+              </thead>
+              <tbody id="deptsTableBody">
+                <tr>
+                  <td colspan="4" class="loading">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
       let rawData = [];
+      let rawReceipts = [];
       let chart = null;
-      let allItems = [];
-      let filteredItems = [];
-      let itemCounts = new Map();
+      let indexChart = null;
+      let deptsChart = null;
+      let allItems = []; // item_numbers, sorted by count desc
+      let filteredItems = []; // item_numbers, after search filter
+      let itemCounts = new Map(); // item_number -> count
+      let itemLabels = new Map(); // item_number -> most-recent description
       let allWarehouses = [];
       let filteredData = [];
+
+      // Resolve an item_number to a friendly label (latest description seen).
+      function labelFor(num) {
+        return itemLabels.get(num) || num || "Unknown Item";
+      }
 
       // Initialize the application
       async function initApp() {
@@ -411,6 +576,9 @@
           populateItemSelector();
           updateVisualization();
           updatePriceChanges();
+          renderPriceIndex();
+          renderDepartments();
+          setupTabs();
         } catch (error) {
           console.error("Error initializing app:", error);
           document.getElementById("tableBody").innerHTML =
@@ -420,52 +588,87 @@
 
       // Load CSV data
       async function loadData() {
-        try {
-          const response = await fetch("costco-items.csv");
-          const csvText = await response.text();
+        const [itemsText, receiptsText] = await Promise.all([
+          fetch("costco-items.csv").then((r) => r.text()),
+          fetch("costco-receipts.csv")
+            .then((r) => (r.ok ? r.text() : ""))
+            .catch(() => ""),
+        ]);
 
-          const lines = csvText.trim().split("\n");
-          const headers = lines[0].split(",");
-
-          rawData = lines
-            .slice(1)
-            .map((line) => {
-              const values = parseCSVLine(line);
-              return {
-                transaction_date: values[0],
-                transaction_barcode: values[1],
-                warehouse_name: values[2],
-                item_number: values[3],
-                description: values[4],
-                description2: values[5],
-                combined_description: values[6],
-                item_unit_price: parseFloat(values[7]),
-              };
-            })
-            .filter(
-              (item) => !isNaN(item.item_unit_price) && item.item_unit_price > 0
-            );
-
-          // Get unique warehouses
-          const warehouseSet = new Set();
-          rawData.forEach((item) => {
-            if (item.warehouse_name) {
-              warehouseSet.add(item.warehouse_name);
-            }
-          });
-          allWarehouses = Array.from(warehouseSet).sort();
-
-          // Initialize filtered data
-          filteredData = [...rawData];
-          updateItemCounts();
-
-          console.log(
-            `Loaded ${rawData.length} records with ${allItems.length} unique items from ${allWarehouses.length} warehouses`
+        rawData = parseCSV(itemsText)
+          .map((row) => ({
+            transaction_date: row.transaction_date,
+            transaction_barcode: row.transaction_barcode,
+            warehouse_name: row.warehouse_name,
+            transaction_type: row.transaction_type,
+            item_number: row.item_number,
+            description: row.description,
+            description2: row.description2,
+            combined_description: row.combined_description,
+            item_department_number: parseInt(row.item_department_number, 10),
+            item_unit_price: parseFloat(row.item_unit_price),
+            item_amount: parseFloat(row.item_amount),
+          }))
+          .filter(
+            (item) =>
+              item.transaction_date &&
+              !isNaN(item.item_unit_price) &&
+              item.item_unit_price > 0
           );
-        } catch (error) {
-          console.error("Error loading data:", error);
-          throw error;
-        }
+
+        rawReceipts = parseCSV(receiptsText)
+          .map((row) => ({
+            transaction_date: row.transaction_date,
+            transaction_barcode: row.transaction_barcode,
+            warehouse_name: row.warehouse_name,
+            transaction_type: row.transaction_type,
+            subtotal: parseFloat(row.subtotal),
+            taxes: parseFloat(row.taxes),
+            total: parseFloat(row.total),
+            instant_savings: parseFloat(row.instant_savings),
+            total_item_count: parseInt(row.total_item_count, 10),
+          }))
+          .filter((r) => r.transaction_date && !isNaN(r.total));
+
+        const warehouseSet = new Set();
+        rawData.forEach((item) => {
+          if (item.warehouse_name) warehouseSet.add(item.warehouse_name);
+        });
+        allWarehouses = Array.from(warehouseSet).sort();
+
+        filteredData = [...rawData];
+        updateItemCounts();
+
+        console.log(
+          `Loaded ${rawData.length} items, ${rawReceipts.length} receipts, ${allItems.length} unique items, ${allWarehouses.length} warehouses`
+        );
+      }
+
+      // Escape arbitrary strings for safe HTML interpolation. Item descriptions
+      // come from a third-party API and could in theory contain markup.
+      function escapeHtml(s) {
+        if (s == null) return "";
+        return String(s).replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[c]));
+      }
+
+      // Parse a whole CSV text into an array of row objects keyed by header
+      function parseCSV(text) {
+        if (!text) return [];
+        const lines = text.trim().split("\n");
+        if (lines.length < 2) return [];
+        const headers = parseCSVLine(lines[0]);
+        return lines.slice(1).map((line) => {
+          const values = parseCSVLine(line);
+          const row = {};
+          headers.forEach((h, i) => (row[h] = values[i]));
+          return row;
+        });
       }
 
       // Parse CSV line handling commas in quoted fields
@@ -491,20 +694,30 @@
         return result;
       }
 
-      // Update item counts based on current filtered data
+      // Update item counts and labels keyed on item_number.
+      // Label = description from the most recent observation, so renames in
+      // the Costco API don't fragment a single item across multiple options.
       function updateItemCounts() {
         itemCounts.clear();
+        itemLabels.clear();
+        const latestDate = new Map();
         filteredData.forEach((item) => {
-          const itemName =
-            item.combined_description || item.description || "Unknown Item";
-          itemCounts.set(itemName, (itemCounts.get(itemName) || 0) + 1);
+          const num = item.item_number;
+          if (!num) return;
+          itemCounts.set(num, (itemCounts.get(num) || 0) + 1);
+          const date = item.transaction_date;
+          if (!latestDate.has(num) || date > latestDate.get(num)) {
+            latestDate.set(num, date);
+            itemLabels.set(
+              num,
+              item.combined_description || item.description || "Unknown Item"
+            );
+          }
         });
 
-        // Get unique items sorted by count (descending)
-        allItems = Array.from(itemCounts.keys()).sort((a, b) => {
-          return itemCounts.get(b) - itemCounts.get(a);
-        });
-
+        allItems = Array.from(itemCounts.keys()).sort(
+          (a, b) => itemCounts.get(b) - itemCounts.get(a)
+        );
         filteredItems = [...allItems];
       }
 
@@ -635,27 +848,27 @@
         chart.setOption(option);
       }
 
-      // Populate item selector
+      // Populate item selector. Option value = item_number; textContent = label.
       function populateItemSelector() {
         const select = document.getElementById("itemSelect");
         select.innerHTML = '<option value="all">All Items (Average)</option>';
 
-        filteredItems.forEach((item) => {
+        filteredItems.forEach((num) => {
           const option = document.createElement("option");
-          option.value = item;
-          const count = itemCounts.get(item) || 0;
-          option.textContent = `${item} (${count})`;
+          option.value = num;
+          const count = itemCounts.get(num) || 0;
+          option.textContent = `${labelFor(num)} (${count})`;
           select.appendChild(option);
         });
       }
 
-      // Filter items based on search
+      // Filter items based on search (matches the displayed label).
       function filterItems() {
         const searchTerm = document
           .getElementById("searchBox")
           .value.toLowerCase();
-        filteredItems = allItems.filter((item) =>
-          item.toLowerCase().includes(searchTerm)
+        filteredItems = allItems.filter((num) =>
+          labelFor(num).toLowerCase().includes(searchTerm)
         );
         populateItemSelector();
       }
@@ -739,12 +952,11 @@
           });
         } else if (selectedItems.length === 1) {
           // Single item - show as individual series
-          const itemName = selectedItems[0];
-          const itemData = filteredData.filter((item) => {
-            const name =
-              item.combined_description || item.description || "Unknown Item";
-            return name === itemName;
-          });
+          const itemNum = selectedItems[0];
+          const itemName = labelFor(itemNum);
+          const itemData = filteredData.filter(
+            (item) => item.item_number === itemNum
+          );
 
           const dateMap = new Map();
           itemData.forEach((item) => {
@@ -804,14 +1016,12 @@
           ];
 
           // First, collect all dates from all selected items
-          selectedItems.forEach((itemName) => {
-            if (itemName === "all") return;
+          selectedItems.forEach((itemNum) => {
+            if (itemNum === "all") return;
 
-            const itemData = filteredData.filter((item) => {
-              const name =
-                item.combined_description || item.description || "Unknown Item";
-              return name === itemName;
-            });
+            const itemData = filteredData.filter(
+              (item) => item.item_number === itemNum
+            );
 
             itemData.forEach((item) => {
               allDates.add(item.transaction_date);
@@ -821,14 +1031,13 @@
           const sortedDates = Array.from(allDates).sort();
 
           // Create series for each selected item
-          selectedItems.forEach((itemName, index) => {
-            if (itemName === "all") return;
+          selectedItems.forEach((itemNum, index) => {
+            if (itemNum === "all") return;
 
-            const itemData = filteredData.filter((item) => {
-              const name =
-                item.combined_description || item.description || "Unknown Item";
-              return name === itemName;
-            });
+            const itemName = labelFor(itemNum);
+            const itemData = filteredData.filter(
+              (item) => item.item_number === itemNum
+            );
 
             const dateMap = new Map();
             itemData.forEach((item) => {
@@ -875,14 +1084,12 @@
           // Many items (>= 10) - show as combined average
           const dateMap = new Map();
 
-          selectedItems.forEach((itemName) => {
-            if (itemName === "all") return;
+          selectedItems.forEach((itemNum) => {
+            if (itemNum === "all") return;
 
-            const itemData = filteredData.filter((item) => {
-              const name =
-                item.combined_description || item.description || "Unknown Item";
-              return name === itemName;
-            });
+            const itemData = filteredData.filter(
+              (item) => item.item_number === itemNum
+            );
 
             itemData.forEach((item) => {
               const date = item.transaction_date;
@@ -1031,11 +1238,7 @@
           tableData = filteredData.slice(0, 100); // Limit to first 100 for performance
         } else {
           tableData = filteredData
-            .filter((item) => {
-              const name =
-                item.combined_description || item.description || "Unknown Item";
-              return selectedItems.includes(name);
-            })
+            .filter((item) => selectedItems.includes(item.item_number))
             .slice(0, 100);
         }
 
@@ -1047,15 +1250,13 @@
         tbody.innerHTML = "";
         tableData.forEach((item) => {
           const row = document.createElement("tr");
+          const name =
+            item.combined_description || item.description || "Unknown Item";
           row.innerHTML = `
-                    <td>${item.transaction_date}</td>
-                    <td>${
-                      item.combined_description ||
-                      item.description ||
-                      "Unknown Item"
-                    }</td>
-                    <td>${item.description2 || "-"}</td>
-                    <td>${item.warehouse_name || "-"}</td>
+                    <td>${escapeHtml(item.transaction_date)}</td>
+                    <td>${escapeHtml(name)}</td>
+                    <td>${escapeHtml(item.description2 || "-")}</td>
+                    <td>${escapeHtml(item.warehouse_name || "-")}</td>
                     <td>$${item.item_unit_price.toFixed(2)}</td>
                 `;
           tbody.appendChild(row);
@@ -1078,18 +1279,16 @@
         } else {
           const statsArray = [];
 
-          selectedItems.forEach((itemName) => {
-            if (itemName === "all") return;
+          selectedItems.forEach((itemNum) => {
+            if (itemNum === "all") return;
 
-            const itemData = filteredData.filter((item) => {
-              const name =
-                item.combined_description || item.description || "Unknown Item";
-              return name === itemName;
-            });
+            const itemData = filteredData.filter(
+              (item) => item.item_number === itemNum
+            );
 
             if (itemData.length > 0) {
               const prices = itemData.map((item) => item.item_unit_price);
-              const stats = calculateStats(prices, itemName);
+              const stats = calculateStats(prices, labelFor(itemNum));
               statsArray.push(stats);
             }
           });
@@ -1138,7 +1337,7 @@
 
             return `
                     <div class="stat-item">
-                        <h4>${displayName}</h4>
+                        <h4>${escapeHtml(displayName)}</h4>
                         <div class="stat-value">Count: ${stats.count}</div>
                         <div class="stat-value">Min: $${stats.min.toFixed(
                           2
@@ -1193,11 +1392,8 @@
             return `
               <div class="price-change-item ${
                 isPositive ? "positive" : "negative"
-              }" onclick="selectItemInMultiSelect('${item.name.replace(
-              /'/g,
-              "\\'"
-            )}')">
-                <div class="price-change-name">${displayName}</div>
+              }" data-item-num="${escapeHtml(item.itemNum)}">
+                <div class="price-change-name">${escapeHtml(displayName)}</div>
                 <div class="price-change-details">
                   <div class="price-change-percent ${
                     isPositive ? "positive" : "negative"
@@ -1209,7 +1405,9 @@
                   <div class="price-change-prices">
                     $${item.earliestPrice.toFixed(
                       2
-                    )} → $${item.latestPrice.toFixed(2)} (${timePeriodText})
+                    )} → $${item.latestPrice.toFixed(2)} (${escapeHtml(
+              timePeriodText
+            )})
                   </div>
                 </div>
               </div>
@@ -1220,18 +1418,17 @@
         container.innerHTML = html;
       }
 
-      // Calculate price changes for all items
+      // Calculate price changes for all items, keyed on item_number.
       function calculatePriceChanges() {
         const itemPriceData = new Map();
 
-        // Group data by item and collect all price points with dates
         filteredData.forEach((item) => {
-          const itemName =
-            item.combined_description || item.description || "Unknown Item";
-          if (!itemPriceData.has(itemName)) {
-            itemPriceData.set(itemName, []);
+          const num = item.item_number;
+          if (!num) return;
+          if (!itemPriceData.has(num)) {
+            itemPriceData.set(num, []);
           }
-          itemPriceData.get(itemName).push({
+          itemPriceData.get(num).push({
             date: new Date(item.transaction_date),
             price: item.item_unit_price,
           });
@@ -1239,8 +1436,7 @@
 
         const priceChanges = [];
 
-        // Calculate price changes for each item
-        itemPriceData.forEach((pricePoints, itemName) => {
+        itemPriceData.forEach((pricePoints, itemNum) => {
           if (pricePoints.length < 2) return; // Need at least 2 data points
 
           // Sort by date
@@ -1271,7 +1467,8 @@
           // Only include items with significant annualized changes (> 1% absolute change per year)
           if (Math.abs(annualizedChange) > 1) {
             priceChanges.push({
-              name: itemName,
+              itemNum,
+              name: labelFor(itemNum),
               earliestPrice,
               latestPrice,
               percentChange: totalPercentChange,
@@ -1292,25 +1489,378 @@
         return priceChanges;
       }
 
-      // Select item in multi-select and update visualization
-      function selectItemInMultiSelect(itemName) {
+      // Select an item (by item_number) in the multi-select and re-render.
+      function selectItemInMultiSelect(itemNum) {
         const select = document.getElementById("itemSelect");
-
-        // Clear current selection
         for (let option of select.options) {
-          option.selected = false;
+          option.selected = option.value === itemNum;
         }
-
-        // Find and select the clicked item
-        for (let option of select.options) {
-          if (option.value === itemName) {
-            option.selected = true;
-            break;
-          }
-        }
-
-        // Update the visualization
         updateVisualization();
+      }
+
+      // ----- Personal Price Index -----
+      // Group items by item_number (stable across description changes). Items
+      // bought >=4 times contribute to the index. Each item is normalized to
+      // 100 at its baseline (avg of first 2 purchases), then monthly means
+      // are computed across all qualified items.
+      function computePriceIndex() {
+        const byItem = new Map();
+        rawData.forEach((r) => {
+          if (!r.item_number) return;
+          if (!byItem.has(r.item_number)) byItem.set(r.item_number, []);
+          byItem.get(r.item_number).push({
+            date: r.transaction_date,
+            price: r.item_unit_price,
+            desc: r.combined_description,
+          });
+        });
+
+        const qualified = [];
+        byItem.forEach((pts, num) => {
+          if (pts.length < 4) return;
+          pts.sort((a, b) => a.date.localeCompare(b.date));
+          const baseline = (pts[0].price + pts[1].price) / 2;
+          if (baseline <= 0) return;
+          qualified.push({ num, pts, baseline, desc: pts[pts.length - 1].desc });
+        });
+
+        const monthlyMap = new Map();
+        qualified.forEach((q) => {
+          q.pts.forEach((p) => {
+            const month = p.date.slice(0, 7);
+            if (!monthlyMap.has(month)) monthlyMap.set(month, []);
+            monthlyMap.get(month).push((p.price / q.baseline) * 100);
+          });
+        });
+
+        const months = Array.from(monthlyMap.keys()).sort();
+        const values = months.map((m) => {
+          const vs = monthlyMap.get(m);
+          return vs.reduce((a, b) => a + b, 0) / vs.length;
+        });
+
+        // Per-item movers: baseline → latest
+        const movers = qualified
+          .map((q) => {
+            const latest = q.pts[q.pts.length - 1];
+            return {
+              desc: q.desc,
+              baseline: q.baseline,
+              latest: latest.price,
+              change: ((latest.price - q.baseline) / q.baseline) * 100,
+              count: q.pts.length,
+            };
+          })
+          .sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+
+        return { months, values, itemCount: qualified.length, movers };
+      }
+
+      function renderPriceIndex() {
+        const idx = computePriceIndex();
+        const headline = document.getElementById("indexHeadline");
+
+        if (idx.months.length < 2) {
+          headline.innerHTML =
+            '<div class="loading" style="grid-column: 1 / -1">Not enough repeat purchases to build an index yet.</div>';
+          return;
+        }
+
+        const first = idx.values[0];
+        const last = idx.values[idx.values.length - 1];
+        const totalChange = last - 100;
+        const firstMonth = idx.months[0];
+        const lastMonth = idx.months[idx.months.length - 1];
+
+        // Annualized rate
+        const firstDate = new Date(firstMonth + "-01");
+        const lastDate = new Date(lastMonth + "-01");
+        const years =
+          (lastDate - firstDate) / (1000 * 60 * 60 * 24 * 365.25) || 1;
+        const annualized = (Math.pow(last / first, 1 / years) - 1) * 100;
+
+        const cls = totalChange >= 0 ? "positive" : "negative";
+        headline.innerHTML = `
+          <div class="headline-stat">
+            <div class="headline-label">Your Costco basket since ${firstMonth}</div>
+            <div class="headline-value ${cls}">${
+          totalChange >= 0 ? "+" : ""
+        }${totalChange.toFixed(1)}%</div>
+            <div class="headline-sub">Latest index: ${last.toFixed(
+              1
+            )} (baseline = 100)</div>
+          </div>
+          <div class="headline-stat">
+            <div class="headline-label">Annualized rate</div>
+            <div class="headline-value ${cls}">${
+          annualized >= 0 ? "+" : ""
+        }${annualized.toFixed(2)}% / yr</div>
+            <div class="headline-sub">Over ${years.toFixed(1)} years</div>
+          </div>
+          <div class="headline-stat">
+            <div class="headline-label">Items in the index</div>
+            <div class="headline-value">${idx.itemCount}</div>
+            <div class="headline-sub">items bought 4+ times</div>
+          </div>
+        `;
+
+        if (!indexChart) {
+          indexChart = echarts.init(document.getElementById("indexChart"));
+        }
+        indexChart.setOption(
+          {
+            title: {
+              text: "Personal Costco Price Index (monthly)",
+              textStyle: { fontSize: 16, fontWeight: 500, color: "#1a1a1a" },
+            },
+            tooltip: {
+              trigger: "axis",
+              formatter: (params) =>
+                `${params[0].axisValue}<br/>Index: ${params[0].value.toFixed(
+                  2
+                )}<br/>(${(params[0].value - 100).toFixed(2)}% vs baseline)`,
+            },
+            grid: { left: "3%", right: "4%", bottom: "12%", top: 50, containLabel: true },
+            xAxis: {
+              type: "category",
+              data: idx.months,
+              axisLabel: { rotate: 45, color: "#6c757d" },
+            },
+            yAxis: {
+              type: "value",
+              name: "Index (baseline = 100)",
+              nameTextStyle: { color: "#6c757d" },
+              axisLabel: { color: "#6c757d" },
+            },
+            series: [
+              {
+                type: "line",
+                data: idx.values,
+                smooth: true,
+                showSymbol: false,
+                lineStyle: { width: 3, color: "#3b82f6" },
+                itemStyle: { color: "#3b82f6" },
+                areaStyle: { color: "rgba(59, 130, 246, 0.08)" },
+                markLine: {
+                  symbol: "none",
+                  silent: true,
+                  data: [
+                    {
+                      yAxis: 100,
+                      lineStyle: { color: "#9ca3af", type: "dashed" },
+                      label: { formatter: "Baseline", color: "#6c757d" },
+                    },
+                  ],
+                },
+              },
+            ],
+            dataZoom: [
+              { type: "inside", start: 0, end: 100 },
+              { start: 0, end: 100, height: 24 },
+            ],
+          },
+          true
+        );
+
+        // Movers table
+        const tbody = document.getElementById("indexMoversBody");
+        tbody.innerHTML = idx.movers
+          .slice(0, 25)
+          .map((m) => {
+            const cls = m.change >= 0 ? "positive" : "negative";
+            const sign = m.change >= 0 ? "+" : "";
+            const display = m.desc.length > 50 ? m.desc.slice(0, 50) + "…" : m.desc;
+            return `
+              <tr>
+                <td>${escapeHtml(display)}</td>
+                <td>$${m.baseline.toFixed(2)}</td>
+                <td>$${m.latest.toFixed(2)}</td>
+                <td><span class="price-change-percent ${cls}">${sign}${m.change.toFixed(
+              1
+            )}%</span></td>
+                <td>${m.count}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      // ----- Departments -----
+      function computeDepartments() {
+        const monthDeptSpend = new Map(); // "YYYY-MM|dept" -> $
+        const deptItems = new Map(); // dept -> Map(desc -> count)
+        const deptLifetime = new Map(); // dept -> {spend, lines}
+
+        rawData.forEach((r) => {
+          if (!r.item_amount || r.item_amount <= 0) return;
+          const dept = isNaN(r.item_department_number)
+            ? 0
+            : r.item_department_number;
+          const month = r.transaction_date.slice(0, 7);
+          const key = `${month}|${dept}`;
+          monthDeptSpend.set(
+            key,
+            (monthDeptSpend.get(key) || 0) + r.item_amount
+          );
+
+          if (!deptItems.has(dept)) deptItems.set(dept, new Map());
+          const dm = deptItems.get(dept);
+          const desc = r.combined_description || "Unknown";
+          dm.set(desc, (dm.get(desc) || 0) + 1);
+
+          if (!deptLifetime.has(dept))
+            deptLifetime.set(dept, { spend: 0, lines: 0 });
+          const dl = deptLifetime.get(dept);
+          dl.spend += r.item_amount;
+          dl.lines += 1;
+        });
+
+        const months = new Set();
+        monthDeptSpend.forEach((_, k) => months.add(k.split("|")[0]));
+        const sortedMonths = Array.from(months).sort();
+
+        const topDepts = Array.from(deptLifetime.entries())
+          .sort((a, b) => b[1].spend - a[1].spend)
+          .slice(0, 10)
+          .map(([d]) => d);
+
+        const deptLabel = (d) => {
+          const items = deptItems.get(d);
+          if (!items) return `Dept ${d}`;
+          const top = Array.from(items.entries()).sort(
+            (a, b) => b[1] - a[1]
+          )[0];
+          const word = (top[0] || "").split(/\s+/)[0].slice(0, 14);
+          return `D${d} · ${word}`;
+        };
+
+        return {
+          months: sortedMonths,
+          topDepts,
+          monthDeptSpend,
+          deptLifetime,
+          deptItems,
+          deptLabel,
+        };
+      }
+
+      function renderDepartments() {
+        const d = computeDepartments();
+        if (d.months.length === 0) return;
+
+        const colors = [
+          "#3b82f6",
+          "#ef4444",
+          "#10b981",
+          "#f59e0b",
+          "#8b5cf6",
+          "#06b6d4",
+          "#84cc16",
+          "#f97316",
+          "#ec4899",
+          "#14b8a6",
+        ];
+
+        const series = d.topDepts.map((dept, i) => ({
+          name: d.deptLabel(dept),
+          type: "line",
+          stack: "spend",
+          areaStyle: {},
+          smooth: true,
+          showSymbol: false,
+          emphasis: { focus: "series" },
+          lineStyle: { width: 1 },
+          itemStyle: { color: colors[i % colors.length] },
+          data: d.months.map(
+            (m) => d.monthDeptSpend.get(`${m}|${dept}`) || 0
+          ),
+        }));
+
+        if (!deptsChart) {
+          deptsChart = echarts.init(document.getElementById("deptsChart"));
+        }
+        deptsChart.setOption(
+          {
+            title: {
+              text: "Monthly Spend by Department (top 10)",
+              textStyle: { fontSize: 16, fontWeight: 500, color: "#1a1a1a" },
+            },
+            tooltip: {
+              trigger: "axis",
+              valueFormatter: (v) => `$${(v || 0).toFixed(2)}`,
+            },
+            legend: {
+              top: 30,
+              type: "scroll",
+              textStyle: { color: "#1a1a1a", fontSize: 12 },
+            },
+            grid: { left: "3%", right: "4%", bottom: "12%", top: 80, containLabel: true },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: d.months,
+              axisLabel: { rotate: 45, color: "#6c757d" },
+            },
+            yAxis: {
+              type: "value",
+              name: "Spend ($)",
+              nameTextStyle: { color: "#6c757d" },
+              axisLabel: { formatter: "${value}", color: "#6c757d" },
+            },
+            series,
+            dataZoom: [
+              { type: "inside", start: 0, end: 100 },
+              { start: 0, end: 100, height: 24 },
+            ],
+          },
+          true
+        );
+
+        const tbody = document.getElementById("deptsTableBody");
+        const rows = Array.from(d.deptLifetime.entries())
+          .sort((a, b) => b[1].spend - a[1].spend)
+          .slice(0, 25);
+        tbody.innerHTML = rows
+          .map(([dept, info]) => {
+            const items = d.deptItems.get(dept);
+            const topItems = items
+              ? Array.from(items.entries())
+                  .sort((a, b) => b[1] - a[1])
+                  .slice(0, 3)
+                  .map((x) => x[0])
+                  .join(", ")
+              : "";
+            const display =
+              topItems.length > 80 ? topItems.slice(0, 80) + "…" : topItems;
+            return `
+              <tr>
+                <td>Dept ${dept}</td>
+                <td>${escapeHtml(display)}</td>
+                <td>$${info.spend.toFixed(2)}</td>
+                <td>${info.lines}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      // ----- Tabs -----
+      function setupTabs() {
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            const target = tab.dataset.tab;
+            document
+              .querySelectorAll(".tab")
+              .forEach((t) => t.classList.toggle("active", t === tab));
+            document.querySelectorAll(".tab-panel").forEach((p) => {
+              p.classList.toggle("active", p.id === `tab-${target}`);
+            });
+            // Echarts needs a resize when its container becomes visible
+            if (target === "trends" && chart) chart.resize();
+            if (target === "index" && indexChart) indexChart.resize();
+            if (target === "depts" && deptsChart) deptsChart.resize();
+          });
+        });
       }
 
       // Event listeners
@@ -1322,11 +1872,23 @@
         .getElementById("warehouseSelect")
         .addEventListener("change", filterByWarehouse);
 
+      // Delegated click handler for sidebar "Largest Price Changes" cards.
+      // Uses data-item-name (escaped) instead of an inline onclick, which
+      // would otherwise be vulnerable to anything weird in item descriptions.
+      document
+        .getElementById("priceChangesContainer")
+        .addEventListener("click", (e) => {
+          const card = e.target.closest(".price-change-item");
+          if (!card) return;
+          const num = card.dataset.itemNum;
+          if (num) selectItemInMultiSelect(num);
+        });
+
       // Resize chart when window resizes
       window.addEventListener("resize", function () {
-        if (chart) {
-          chart.resize();
-        }
+        if (chart) chart.resize();
+        if (indexChart) indexChart.resize();
+        if (deptsChart) deptsChart.resize();
       });
 
       // Initialize the app when page loads

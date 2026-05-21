@@ -66,15 +66,31 @@ A beautiful, interactive HTML dashboard for analyzing your Costco purchase data 
 
 ## Data Format
 
-The dashboard expects a CSV file named `costco-items.csv` with the following columns:
+The dashboard loads two CSVs from the same directory; both are produced by `generate_csv_file.py`.
 
-- `transaction_date`: Date of purchase (YYYY-MM-DD)
-- `transaction_barcode`: Receipt barcode
-- `item_number`: Item number
-- `description`: Item description
-- `description2`: Additional description
-- `combined_description`: Full item name
-- `item_unit_price`: Price in dollars
+`costco-items.csv` (one row per line item):
+
+- `transaction_date` — purchase date, `YYYY-MM-DD`
+- `transaction_barcode` — receipt barcode
+- `warehouse_name` — store name
+- `transaction_type` — `Sales`, `Returns`, etc.
+- `item_number` — stable item identifier; used for grouping
+- `description`, `description2`, `combined_description` — display text
+- `item_department_number` — Costco department number
+- `item_unit_price` — per-unit price in dollars
+- `item_amount` — line-item paid amount
+- `item_quantity` — units on this line
+
+`costco-receipts.csv` (one row per receipt):
+
+- `transaction_date`, `transaction_barcode`, `warehouse_name`, `transaction_type`
+- `subtotal`, `taxes`, `total`, `instant_savings`, `total_item_count`
+
+## Tabs
+
+- **Item Trends** — line chart + data table for selected items, grouped by `item_number`.
+- **Price Index** — personal Costco price index built from items bought ≥4 times. Each item is normalized to 100 at its baseline (avg of first 2 purchases); the chart plots the monthly mean across qualified items. Headline cards show total %, annualized %, and item count. Inflation = red, deflation = green.
+- **Departments** — stacked monthly spend across the top 10 departments by lifetime spend, plus a lifetime-spend table.
 
 ## Browser Compatibility
 

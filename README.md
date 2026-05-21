@@ -45,29 +45,28 @@ python fetch_all_receipt_details.py
 
 ## CSV Export
 
-Use the `generate_csv_file.py` script to export all receipt data to CSV:
+Use the `generate_csv_file.py` script to flatten all downloaded receipt JSON into two CSVs at the repo root:
 
 ```bash
 python generate_csv_file.py
 ```
 
-This script uses the following DuckDB query to process the JSON data and save as `costco-items.csv`:
+- `costco-items.csv` — one row per line item with `transaction_date`, `transaction_barcode`, `warehouse_name`, `transaction_type`, `item_number`, `description`, `description2`, `combined_description`, `item_department_number`, `item_unit_price`, `item_amount`, `item_quantity`.
+- `costco-receipts.csv` — one row per receipt with `transaction_date`, `transaction_barcode`, `warehouse_name`, `transaction_type`, `subtotal`, `taxes`, `total`, `instant_savings`, `total_item_count`.
 
-```sql
-WITH receipts AS (
-    SELECT
-    json_extract(data, '$.receiptsWithCounts.receipts[0]') AS r
-    FROM read_json_auto('costco-analysis/data/receipts/*json')
-)
-SELECT
-    r ->> 'transactionDate'      AS transaction_date,
-    r ->> 'transactionBarcode'   AS transaction_barcode,
-    r ->> 'warehouseName'        AS warehouse_name,
-    item ->> 'itemNumber'        AS item_number,
-    item ->> 'itemDescription01' AS description,
-    item ->> 'itemDescription02' AS description2,
-    description || ' ' || description2 AS combined_description,
-    (item ->> 'itemUnitPriceAmount')::DOUBLE AS item_unit_price
-FROM receipts,
-        UNNEST(json_extract(r, '$.itemArray[*]')) AS t(item)
+The queries used by the script live in `generate_csv_file.py` (`ITEMS_QUERY` and `RECEIPTS_QUERY`). They read directly from `data/receipts/*.json` via DuckDB's `read_json_auto`.
+
+## Dashboard
+
+`index.html` is a self-contained ECharts dashboard that consumes both CSVs. Serve the directory locally and open it:
+
+```bash
+python -m http.server 8000
+# then open http://localhost:8000/index.html
 ```
+
+Three tabs:
+
+- **Item Trends** — original price-over-time chart and data table, grouped by `item_number` (descriptions are shown as the latest seen for each item).
+- **Price Index** — personal Costco price index. Items bought 4+ times are normalized to 100 at their baseline (avg of first 2 purchases); the chart plots the monthly mean across qualified items. Includes a "biggest movers" table.
+- **Departments** — monthly stacked spend chart for the top 10 departments, plus a lifetime spend table showing the top items in each department.
