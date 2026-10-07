@@ -14,7 +14,12 @@ uv run python generate_csv_file.py          # flatten data/receipts/*.json → c
 python -m http.server 8000                  # then open http://localhost:8000/index.html
 ```
 
-There is no test suite or linter configured.
+```bash
+uv run python process_receipt.py receipt.txt|receipt.pdf   # parse → discounts → identify → names → categories → validate → data/orders.json
+uv run python -m unittest test_receipt_pipeline -v          # stdlib tests, synthetic receipt
+```
+
+No linter is configured.
 
 ## Architecture
 
@@ -25,6 +30,8 @@ Three-stage data pipeline; each stage's output is the next stage's input on disk
 2. **Detail fetch** (`fetch_all_receipt_details.py` → `fetch_receipt_details.py`) — scans `data/costco_data_*.json` for every `transactionBarcode`, then calls the same GraphQL endpoint with a barcode-scoped query to pull full item-level data. Each receipt is saved as `data/receipts/costco_data_receipt_<barcode>.json`. The batch script skips barcodes that already have a receipt file on disk, so it's safe to re-run. `fetch_all_receipt_details.py` loads `fetch_receipt_details.py` via `importlib.util.spec_from_file_location` (not a package import) — the file must stay at repo root.
 
 3. **CSV export** (`generate_csv_file.py`) — uses DuckDB's `read_json_auto('data/receipts/*.json')` to write two CSVs at repo root: `costco-items.csv` (one row per line item, unnested from `itemArray`, includes department + paid amount) and `costco-receipts.csv` (one row per receipt with subtotal / taxes / total / instant savings). Both queries live as `ITEMS_QUERY` / `RECEIPTS_QUERY` module constants. `index.html` (a self-contained ECharts dashboard, no build step) fetches both via same-origin requests and renders three tabs: Item Trends, Price Index (personal CPI keyed on `item_number`), Departments (top-10 monthly stacked spend).
+
+4. **Receipt text/PDF parsing** (separate from the API pipeline above; for costco.ca printouts) — `receipt_parser.py` (line extraction, discounts, validation vs SUBTOTAL / INSTANT SAVINGS / item count), `receipt_identify.py` (local catalog `data/item_catalog.json` → keyword rules → tax-code guess; short unique names; categories), `order_store.py` (`JsonOrderStore`, orders in `data/orders.json`, swappable for a DB), `process_receipt.py` (CLI). PDFs are read through the `pdftotext` binary. Orders that fail validation are printed and not stored unless `--save-invalid`.
 
 ## Auth
 
